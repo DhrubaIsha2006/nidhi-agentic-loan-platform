@@ -1,0 +1,16 @@
+[
+  {
+    "id": "user1",
+    "name": "Aarav Sharma",
+    "credit_score": 780,
+    "monthly_income": 85000,
+    "preapproved_limit": 200000
+  },
+  {
+    "id": "user2",
+    "name": "Riya Verma",
+    "credit_score": 710,
+    "monthly_income": 60000,
+    "preapproved_limit": 150000
+  }
+]

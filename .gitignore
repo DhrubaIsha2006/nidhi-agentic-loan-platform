@@ -1,18 +1,25 @@
-# Node / Next.js
-frontend/node_modules/
-frontend/.next/
-frontend/.env.local
-
 # Python
-backend/__pycache__/
-backend/.venv/
-backend/venv/
+__pycache__/
 *.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
 
-# Env files
+# FastAPI
 .env
 
-# OS / Editor
+# Node / Next.js
+node_modules/
+.next/
+out/
+
+# OS
 .DS_Store
+
+# IDE
 .vscode/
 .idea/
+
+# Logs
+*.log
