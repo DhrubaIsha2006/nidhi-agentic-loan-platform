@@ -1,14 +1,29 @@
 from fastapi import FastAPI
-from sessions.store import create_session
+import json
+
+from sessions.store import (
+    create_session,
+    get_session,
+    get_all_sessions,
+)
+
 from agents.master import handle_message
 from agents.verification import verify_salary_slip
-from sessions.store import get_session
-from sessions.store import get_all_sessions
-import json
 
 app = FastAPI()
 
 
+# -------------------------
+# Health Check
+# -------------------------
+@app.get("/health")
+def health():
+    return {"status": "ok"}
+
+
+# -------------------------
+# Session Start (Optional)
+# -------------------------
 @app.post("/session/start")
 def start_session(user_id: str):
     with open("data/users.json") as f:
@@ -26,11 +41,22 @@ def start_session(user_id: str):
         "message": f"Hi {user['name']} 👋 I’m NIDHI. How can I help you today?"
     }
 
+
+# -------------------------
+# Chat Message (CORE)
+# -------------------------
 @app.post("/chat/message")
 def chat_message(session_id: str, message: str):
-    response = handle_message(session_id, message)
-    return response
+    """
+    Main conversational endpoint.
+    Session auto-creation is handled INSIDE handle_message.
+    """
+    return handle_message(session_id, message)
 
+
+# -------------------------
+# Document Upload
+# -------------------------
 @app.post("/document/upload")
 def upload_document(session_id: str, slip_type: str):
     """
@@ -45,7 +71,7 @@ def upload_document(session_id: str, slip_type: str):
 
     if result["status"] == "REJECTED":
         session["loan"]["status"] = "REJECTED"
-        reply = f"Sorry 😕 Based on your salary slip, we can’t proceed further."
+        reply = "Sorry 😕 Based on your salary slip, we can’t proceed further."
 
     else:
         session["stage"] = "UNDERWRITE"
@@ -65,11 +91,12 @@ def upload_document(session_id: str, slip_type: str):
         "status": session["loan"]["status"]
     }
 
+
+# -------------------------
+# Admin View
+# -------------------------
 @app.get("/admin/applications")
 def get_applications():
-    """
-    Admin view of all loan applications
-    """
     applications = []
 
     for session in get_all_sessions():
