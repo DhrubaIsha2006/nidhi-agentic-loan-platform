@@ -1,6 +1,27 @@
 import { motion } from "framer-motion";
 
-export default function DecisionCard() {
+interface Decision {
+  amount: number;
+  emi: number;
+  tenure: number;
+}
+
+interface DecisionCardProps {
+  applicationStatus: "approved" | "rejected" | string;
+  decision: Decision | null;
+  reason?: string;
+}
+
+export default function DecisionCard({
+  applicationStatus,
+  decision,
+  reason,
+}: DecisionCardProps) {
+  // ⛔ DO NOT RENDER unless backend explicitly approves
+  if (applicationStatus !== "approved" || !decision) {
+    return null;
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -14,21 +35,23 @@ export default function DecisionCard() {
       <div className="mt-4 space-y-2 text-sm">
         <div className="flex justify-between">
           <span>Approved Amount</span>
-          <span>₹5,00,000</span>
+          <span>₹{decision.amount.toLocaleString()}</span>
         </div>
         <div className="flex justify-between">
           <span>EMI</span>
-          <span>₹22,800 / month</span>
+          <span>₹{decision.emi.toLocaleString()} / month</span>
         </div>
         <div className="flex justify-between">
           <span>Tenure</span>
-          <span>24 months</span>
+          <span>{decision.tenure} months</span>
         </div>
       </div>
 
-      <p className="mt-4 text-xs text-gray-300">
-        Reason: Stable income, healthy credit score, and low risk profile.
-      </p>
+      {reason && (
+        <p className="mt-4 text-xs text-gray-300">
+          Reason: {reason}
+        </p>
+      )}
     </motion.div>
   );
 }
