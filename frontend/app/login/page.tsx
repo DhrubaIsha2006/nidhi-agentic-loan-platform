@@ -300,7 +300,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
-import { login } from "@/lib/auth";
+import { login } from "@/lib/session";
 
 export default function LoginPage() {
   const [role, setRole] = useState<"user" | "admin">("user");

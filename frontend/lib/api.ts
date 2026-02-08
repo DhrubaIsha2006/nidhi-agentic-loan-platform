@@ -67,3 +67,16 @@ export async function uploadSalarySlip(
 
   return res.json();
 }
+
+export async function fetchAdminApplications() {
+  const res = await fetch("http://localhost:8000/admin/applications");
+  if (!res.ok) throw new Error("Failed to fetch applications");
+  return res.json();
+}
+
+export async function resolveApplication(applicationId: string) {
+  await fetch(`http://localhost:8000/admin/applications/${applicationId}/resolve`, {
+    method: "POST",
+  });
+}
+

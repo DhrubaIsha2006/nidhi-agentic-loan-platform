@@ -1,18 +1,26 @@
-interface PendingApplication {
+// frontend/components/admin/PendingTable.tsx
+
+export interface PendingApplication {
   id: string;
   name: string;
   amount: number;
   reason: string;
   submittedAt: string;
-  assignedTo?: string;
+  assignedTo?: string | null;
   priority: "Critical" | "High" | "Medium";
 }
 
 interface PendingTableProps {
   applications: PendingApplication[];
+  onResolve: (id: string) => void;
+  onAssign?: (id: string) => void;
 }
 
-export default function PendingTable({ applications }: PendingTableProps) {
+export default function PendingTable({
+  applications,
+  onResolve,
+  onAssign,
+}: PendingTableProps) {
   return (
     <div className="rounded-2xl bg-[#121A33] border border-gray-800 p-6">
       <h3 className="font-semibold mb-4">
@@ -62,10 +70,19 @@ export default function PendingTable({ applications }: PendingTableProps) {
                   </span>
                 </td>
                 <td className="flex gap-2">
-                  <button className="px-3 py-1 rounded-lg bg-gray-700 text-xs">
-                    Assign
-                  </button>
-                  <button className="px-3 py-1 rounded-lg bg-green-500 text-black text-xs">
+                  {onAssign && (
+                    <button
+                      onClick={() => onAssign(app.id)}
+                      className="px-3 py-1 rounded-lg bg-gray-700 text-xs"
+                    >
+                      Assign
+                    </button>
+                  )}
+
+                  <button
+                    onClick={() => onResolve(app.id)}
+                    className="px-3 py-1 rounded-lg bg-green-500 text-black text-xs"
+                  >
                     Resolve
                   </button>
                 </td>

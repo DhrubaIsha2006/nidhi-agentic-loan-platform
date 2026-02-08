@@ -1,38 +1,24 @@
-// "use client";
-// import ChatBubble from "@/components/ChatBubble";
-// import ChatInput from "@/components/ChatInput";
-
-// export default function ChatPage() {
-//   return (
-//     <div className="flex flex-col h-screen p-6">
-//       <div className="flex-1 space-y-3 overflow-y-auto">
-//         <ChatBubble from="bot" text="Hi! How much loan do you need?" />
-//         <ChatBubble from="user" text="₹2,00,000" />
-//         <ChatBubble from="bot" text="Please upload your salary slip for verification." />
-//       </div>
-//       <ChatInput />
-//     </div>
-//   );
-// }
-
 "use client";
 
-import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import ChatBubble from "@/components/ChatBubble";
 import ChatInput from "@/components/ChatInput";
 import UserContextCard from "@/components/UserContextCard";
 import UploadCard from "@/components/UploadCard";
 import DecisionCard from "@/components/DecisionCard";
+import { useChatFlow } from "@/hooks/useChatFlow";
 
 export default function ChatPage() {
-  const [messages, setMessages] = useState([
-    {
-      role: "bot",
-      message:
-        "Hello 👋 I’m Nidhi. I’ll guide you through your loan application step by step.",
-    },
-  ]);
+  const {
+    messages,
+    stage,
+    loading,
+    sendMessage,
+    submitSalarySlip,
+    applicationStatus,
+    userContext,
+    decision,
+  } = useChatFlow();
 
   return (
     <div className="min-h-screen bg-[#0B1020] text-white flex flex-col">
@@ -41,25 +27,33 @@ export default function ChatPage() {
       <div className="flex-1 px-6 py-8 grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* LEFT PANEL */}
         <div className="lg:col-span-1 space-y-6">
-          <UserContextCard />
-          <UploadCard />
+          <UserContextCard
+            user={userContext ?? {}}
+            applicationStatus={applicationStatus ?? "in_progress"}
+          />
+
+          {stage === "DOCUMENTS_REQUIRED" && (
+            <UploadCard onUpload={submitSalarySlip} />
+          )}
         </div>
 
         {/* CHAT AREA */}
         <div className="lg:col-span-3 flex flex-col">
           <div className="flex-1 overflow-y-auto space-y-4 px-2">
             {messages.map((m, i) => (
-              <ChatBubble key={i} role={m.role} message={m.message} />
+              <ChatBubble key={i} role={m.role} message={m.text} />
             ))}
 
-            {/* Final decision shown inline like Streamlit */}
-            <DecisionCard />
+            {/* Decision ONLY when backend says so */}
+            {decision && <DecisionCard decision={decision} />}
           </div>
 
-          <ChatInput onSend={() => {}} />
+          <ChatInput
+            disabled={loading}
+            onSend={(text) => sendMessage(text)}
+          />
         </div>
       </div>
     </div>
   );
 }
-
