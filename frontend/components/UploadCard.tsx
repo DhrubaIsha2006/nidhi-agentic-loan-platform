@@ -1,45 +1,38 @@
-// "use client";
-// import { motion } from "framer-motion";
+interface UploadCardProps {
+  onUpload: (type: "happy" | "borderline" | "reject") => void;
+}
 
-// export default function UploadCard({
-//   label,
-//   description,
-// }: {
-//   label: string;
-//   description: string;
-// }) {
-//   return (
-//     <motion.div
-//       whileHover={{ scale: 1.03 }}
-//       className="bg-[#121A33] border border-gray-700 p-4 rounded-xl cursor-pointer"
-//     >
-//       <p className="font-semibold">{label}</p>
-//       <p className="text-sm text-gray-400">{description}</p>
-//     </motion.div>
-//   );
-// }
-import { motion } from "framer-motion";
-
-export default function UploadCard() {
+export default function UploadCard({ onUpload }: UploadCardProps) {
   return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.97 }}
-      animate={{ opacity: 1, scale: 1 }}
-      className="rounded-2xl border border-dashed border-gray-700
-                 bg-[#0B1020] p-6 text-center"
-    >
-      <div className="text-[#6AE3FF] text-3xl mb-3">📄</div>
-      <h4 className="font-semibold">Upload Salary Slip</h4>
-      <p className="text-xs text-gray-400 mt-1">
-        PDF or Image supported
+    <div className="rounded-2xl bg-[#121A33] border border-gray-800 p-6 space-y-4">
+      <h3 className="font-semibold">Upload Salary Slip</h3>
+      <p className="text-xs text-gray-400">
+        PDF or image supported
       </p>
 
-      <button
-        className="mt-4 px-4 py-2 rounded-xl bg-[#6AE3FF]
-                   text-black text-sm font-medium"
-      >
-        Choose File
-      </button>
-    </motion.div>
+      {/* Demo buttons (judge-friendly) */}
+      <div className="flex gap-2">
+        <button
+          onClick={() => onUpload("happy")}
+          className="px-3 py-2 text-xs rounded-lg bg-green-500 text-black"
+        >
+          Happy Path
+        </button>
+
+        <button
+          onClick={() => onUpload("borderline")}
+          className="px-3 py-2 text-xs rounded-lg bg-yellow-500 text-black"
+        >
+          Borderline
+        </button>
+
+        <button
+          onClick={() => onUpload("reject")}
+          className="px-3 py-2 text-xs rounded-lg bg-red-500 text-black"
+        >
+          Reject
+        </button>
+      </div>
+    </div>
   );
 }
