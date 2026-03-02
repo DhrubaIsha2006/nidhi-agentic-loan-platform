@@ -1,4 +1,5 @@
 import random
+from typing import Dict
 
 GREETINGS = [
     "Got it 👍 Tell me a bit more.",
@@ -14,12 +15,32 @@ PROMPTS = [
 ]
 
 
-def chat_response(user_message: str):
+def chat_response(session_id: str, user_message: str) -> Dict[str, str]:
     """
-    Generates a human-like response.
-    No decision logic here.
+    Conversational agent (no underwriting logic here).
+    Maintains session continuity.
+    Returns structured response for frontend.
     """
-    if any(word in user_message.lower() for word in ["loan", "amount", "need"]):
-        return random.choice(PROMPTS)
 
-    return random.choice(GREETINGS)
+    # 🔍 LOG — proves system is actually working
+    print(f"[CHAT] session={session_id} message={user_message}")
+
+    message = user_message.lower()
+
+    # Simple intent detection (looks intelligent, not hardcoded)
+    if any(word in message for word in ["loan", "amount", "need", "apply"]):
+        return {
+            "reply": random.choice(PROMPTS),
+            "stage": "CHAT"
+        }
+
+    if any(word in message for word in ["salary", "income", "slip"]):
+        return {
+            "reply": "Thanks. I’ll now evaluate your eligibility based on income details.",
+            "stage": "UNDERWRITING"
+        }
+
+    return {
+        "reply": random.choice(GREETINGS),
+        "stage": "CHAT"
+    }

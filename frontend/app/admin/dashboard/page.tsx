@@ -1,24 +1,22 @@
-// export default function AdminDashboard() {
-//   return (
-//     <div className="p-10">
-//       <h1 className="text-2xl mb-6">Admin Dashboard</h1>
+"use client";
 
-//       <div className="bg-[#121A33] p-4 rounded-xl space-y-2">
-//         <p><b>Riya Sharma</b> – Approved</p>
-//         <p className="text-gray-400 text-sm">
-//           Reason: Stable income, good credit
-//         </p>
-//       </div>
-//     </div>
-//   );
-// }
 import AdminTopBar from "@/components/admin/AdminTopBar";
 import MetricCard from "@/components/admin/MetricCard";
 import PendingTable from "@/components/admin/PendingTable";
-import ConversionCard from "@/components/admin/ConversionCard";
+import ConversationCard from "@/components/admin/ConversationCard";
 import QuickActions from "@/components/admin/QuickActions";
 
+import { useAdminApplications } from "@/hooks/useAdminApplications";
+import { resolveApplication } from "@/lib/api";
+
 export default function AdminDashboard() {
+  const { applications, loading, reload } = useAdminApplications();
+
+  async function handleResolve(applicationId: string) {
+    await resolveApplication(applicationId);
+    reload(); // refresh admin view after action
+  }
+
   return (
     <div className="min-h-screen bg-[#0B1020] text-white">
       <AdminTopBar />
@@ -41,8 +39,42 @@ export default function AdminDashboard() {
 
         {/* MAIN */}
         <div className="lg:col-span-3 space-y-6">
-          <PendingTable />
-          <ConversionCard />
+          {loading ? (
+            <div className="text-gray-400">Loading pending applications…</div>
+          ) : (
+            <PendingTable
+              applications={applications.map((app) => ({
+                id: app.application_id,
+                name: app.name,
+                amount: app.amount,
+                reason: app.reason,
+                submittedAt: app.submitted_at,
+                assignedTo: app.assigned_to,
+                priority:
+                  app.priority === "HIGH"
+                    ? "High"
+                    : app.priority === "MEDIUM"
+                    ? "Medium"
+                    : "Critical",
+              }))}
+              onResolve={handleResolve}
+            />
+          )}
+
+          <ConversationCard
+  totalApplications={applications.length}
+  underReview={
+    applications.filter(
+      (app) => app.status === "under_review"
+    ).length
+  }
+  approved={
+    applications.filter(
+      (app) => app.status === "approved"
+    ).length
+  }
+/>
+
         </div>
       </div>
     </div>
